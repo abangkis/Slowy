@@ -3,13 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Slowy</title>
-    <script src="js/jquery.3.5.0.js"></script>
+    <script src="js/jquery-3.5.0.js"></script>
     <script src="js/bootstrap.js"></script>
     <link rel="stylesheet" href="css/bootstrap.css">
     <script src="Slowy.js"></script>
 </head>
 <body>
 <div class="container">
+    <h2 id="status">
+       status
+    </h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">field</th>
+            <th scope="col">value</th>
+        </tr>
+        </thead>
+        <tbody id="ipBody"></tbody>
+    </table>
+    <br/>
     <table class="table">
         <thead>
         <tr>
@@ -17,9 +30,8 @@
             <th scope="col">content</th>
         </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody id="networkBody"></tbody>
     </table>
-
 </div>
 </body>
 </html>
