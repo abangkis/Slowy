@@ -7,6 +7,8 @@ import kotlinx.html.dom.create
 import kotlinx.html.js.tr
 import kotlinx.html.td
 import kotlinx.html.th
+import kotlinx.serialization.DynamicObjectParser
+import kotlinx.serialization.Serializable
 import org.w3c.dom.Element
 import org.w3c.dom.events.EventListener
 import kotlin.browser.document
@@ -37,7 +39,8 @@ fun main() {
             }
         }
 
-//        var connection = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection
+        val connection = getNavigatorConnection()
+        console.log("connection $connection")
 //        if(connection) {
 //            connection.addEventListener('change', logNetworkInfo);
 //            logNetworkInfo()
@@ -61,6 +64,17 @@ fun main() {
         }
     }
 }
+
+
+//@Serializable
+//data class Data(val a: Int)
+//
+//@Serializable
+//data class DataWrapper(val s: String, val d: Data?)
+//
+//val dyn = js("""{s:"foo", d:{a:42}}""")
+//val parsed = DynamicObjectParser().parse<DataWrapper>(dyn)
+//parsed == DataWrapper("foo", Data(42)) // true
 
 private fun addTr(info: List<String>, table: Element?) {
     var tr = document.create.tr {
@@ -99,6 +113,22 @@ fun  updateIndicator(source: String) {
     }
 }
 
+fun getNavigatorConnection(){
+    // fixme kotlin/js doesn't have navigator.connection object yet. So we must create it manually
+//    var connection = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection
+    js(
+            """var connection = window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection; 
+                console.log('con : ' + connection);
+                console.log(connection.effectiveType)
+            """
+    )
+
+    return js("window.navigator.connection || window.navigator.mozConnection || window.navigator.webkitConnection")
+}
+
+class NetworkInformation (val effectiveType: String)
+
+
 //fun logNetworkInfo() {
 //    // Network type that browser uses
 //    log('         type: ' + navigator.connection.type);
@@ -120,5 +150,4 @@ fun  updateIndicator(source: String) {
 //    // agent.
 //    log('     saveData: ' + navigator.connection.saveData);
 //}
-
 
