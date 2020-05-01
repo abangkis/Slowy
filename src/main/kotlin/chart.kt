@@ -4,8 +4,24 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import kotlin.browser.document
 import kotlin.browser.window
+import kotlin.js.Date
 import kotlin.js.Json
 
+
+fun loadData() {
+    val tableNetworkBody = document.getElementById("historyBody")
+
+
+    loadFromLocal().asReversed().forEachIndexed { index, history ->
+        val date = Date(history.timestamp)
+
+        addTr(
+            Pair((index+1).toString(),
+                "${date.toUTCString()} ${history.ip} ${history.type} ${history.downlink}Mb/s ${history.rtt}ms"),
+            tableNetworkBody
+        )
+    }
+}
 
 fun loadChart() {
 

@@ -9,8 +9,10 @@ import kotlinx.serialization.DynamicObjectParser
 import kotlinx.serialization.ImplicitReflectionSerializer
 import kotlinx.serialization.Serializable
 import org.w3c.dom.Element
+import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.events.EventListener
 import kotlin.browser.document
+import kotlin.browser.localStorage
 import kotlin.browser.window
 import kotlin.js.Date
 
@@ -29,12 +31,25 @@ fun main() {
             val info = updateBrowserBody()
 
             info?.let {
-                val history = History(1, ip, it.effectiveType, it.downlink, it.rtt)
-                saveToLocal(history, 1)
+                val history = History(Date.now(), ip, it.effectiveType, it.downlink, it.rtt)
+                saveToLocal(history)
             }
+
+            loadData()
+            setClearButton()
         }
-        loadChart()
+
+//        loadChart()
     }
+}
+
+private fun setClearButton() {
+    val button = document.getElementById("clearHistory") as HTMLButtonElement
+    button.addEventListener("click", {
+        console.log("Clearing history")
+        localStorage.clear()
+        loadData()
+    })
 }
 
 suspend fun updateStatus(source: String): String {
@@ -126,7 +141,7 @@ class NetworkInformation(val effectiveType: String,
                          val saveData: Boolean
 )
 
-private fun addTr(info: Pair<String, String>, table: Element?) {
+fun addTr(info: Pair<String, String>, table: Element?) {
     var tr = document.create.tr {
         th {
             scope = ThScope.row
