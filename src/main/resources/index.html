@@ -6,12 +6,13 @@
     <script src="js/jquery-3.5.0.js"></script>
     <script src="js/bootstrap.js"></script>
     <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="Slowy.js"></script>
 </head>
 <body>
 <div class="container">
     <h2 id="internetStatus">
-       Internet Status: Offline
+        Internet Status: Offline
     </h2>
     <table class="table">
         <thead>
@@ -35,8 +36,10 @@
             <th scope="col">Value</th>
         </tr>
         </thead>
-        <tbody id="networkBody"></tbody>
+        <tbody id="browserBody"></tbody>
     </table>
+
+    <canvas id="myChart" width="400" height="400"></canvas>
 </div>
 </body>
 </html>

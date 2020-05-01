@@ -20,6 +20,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:0.20.0")
 
 //    implementation(npm("left-pad", "1.3.0"))
+//    implementation(npm("chart.js"))
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-js")
 }
@@ -32,11 +33,9 @@ kotlin {
         browser()
 //        nodejs()
     }
-    sourceSets["main"].dependencies {
-        implementation(npm("is-sorted"))
-    }
-//
-////    sourceSets["main"].dependencies {
+//    sourceSets["main"].dependencies {
+////        implementation(npm("is-sorted"))
 ////        implementation(npm("left-pad", "1.3.0"))
-////    }
+////        implementation(npm("chart.js"))
+//    }
 }

@@ -1,6 +1,4 @@
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.await
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.html.ThScope
 import kotlinx.html.classes
 import kotlinx.html.dom.create
@@ -22,18 +20,26 @@ fun main() {
 //    document.bgColor = "FFAA12"
 
 // Update the online status icon based on connectivity
-    window.addEventListener("online", EventListener { updateStatus("from online") })
-    window.addEventListener("offline", EventListener { updateStatus("from offline") })
+    window.addEventListener("online", EventListener { MainScope().launch { updateStatus("from online") }})
+    window.addEventListener("offline", EventListener { MainScope().launch { updateStatus("from offline") }})
 
     window.onload = {
-        updateStatus("from onload")
-        updateNetworkBody()
+        MainScope().launch {
+            val ip = updateStatus("from onload")
+            val info = updateBrowserBody()
+
+            info?.let {
+                val history = History(1, ip, it.effectiveType, it.downlink, it.rtt)
+                saveToLocal(history, 1)
+            }
+        }
+        loadChart()
     }
 }
 
-fun updateStatus(source: String) {
+suspend fun updateStatus(source: String): String {
     updateConnectionStatus(source)
-    updateIpBody()
+    return updateIpBody()
 }
 
 /**
@@ -41,7 +47,7 @@ fun updateStatus(source: String) {
  *  It will still be online although your hardware adapter is offline
  */
 fun updateConnectionStatus(source: String) {
-    console.log("from $source")
+    console.log("$source")
     val status = document.getElementById("connectionStatus")
     if (window.navigator.onLine) {
         status?.textContent = "Connection Status: Online"
@@ -52,11 +58,13 @@ fun updateConnectionStatus(source: String) {
     }
 }
 
-private fun updateIpBody() {
+private suspend fun updateIpBody() : String = coroutineScope {
     val tableIpBody = document.getElementById("ipBody")
 
-    MainScope().launch {
+    val ipDef = async {
         val ipInfo = fetchIpInfo()
+
+        var ip = "unknown"
 
         val status = document.getElementById("internetStatus")
         status?.textContent = "Internet Status: Online"
@@ -65,37 +73,45 @@ private fun updateIpBody() {
             val info = it.split("=")
             if (info.size == 2) {
                 when (info[0]) {
-                    "ip", "loc", "uag" -> addTr(Pair(info[0], info[1]), tableIpBody)
+                    "ip" -> {
+                        ip = info[1]
+                        addTr(Pair(info[0], info[1]), tableIpBody)
+                    }
+                    "loc", "uag" -> addTr(Pair(info[0], info[1]), tableIpBody)
                     "ts" -> {
-                        console.log("ts ${info[1]}")
                         val ts = info[1].toDouble() * 1000 // change from second to millisecond
-                        console.log("ts $ts")
                         addTr(Pair("ts", Date(ts).toString()), tableIpBody)
                     }
                 }
             }
         }
+        ip
     }
+
+    ipDef.await()
 }
 
 @ImplicitReflectionSerializer
-private fun updateNetworkBody() {
+private fun updateBrowserBody(): NetworkInformation? {
     val connection = getNavigatorConnection()
     if (connection != null) {
         val networkInfo = parseConnection(connection)
 
-        val tableNetworkBody = document.getElementById("networkBody")
+        val tableNetworkBody = document.getElementById("browserBody")
         addTr(Pair("Effective Type", networkInfo.effectiveType), tableNetworkBody)
         addTr(Pair("Down link", "${networkInfo.downlink}Mb/s"), tableNetworkBody)
         addTr(Pair("Round trip time", "${networkInfo.rtt}ms"), tableNetworkBody)
         addTr(Pair("Save Data", "${networkInfo.saveData}"), tableNetworkBody)
 
+        return networkInfo
 //            connection.addEventListener('change' function() {
 //                // network change
 //            });
 //            connection.addEventListener('change', logNetworkInfo);
 //            logNetworkInfo()
     }
+
+    return null
 }
 
 @ImplicitReflectionSerializer
@@ -105,7 +121,7 @@ fun parseConnection(connection: Unit): NetworkInformation {
 
 @Serializable
 class NetworkInformation(val effectiveType: String,
-                         val downlink: Int,
+                         val downlink: Float,
                          val rtt: Int,
                          val saveData: Boolean
 )
