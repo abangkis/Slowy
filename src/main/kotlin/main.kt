@@ -24,6 +24,7 @@ fun main() {
 // Update the online status icon based on connectivity
     window.addEventListener("online", EventListener { MainScope().launch { updateStatus("from online") }})
     window.addEventListener("offline", EventListener { MainScope().launch { updateStatus("from offline") }})
+    addServiceWorker()
 
     window.onload = {
         MainScope().launch {

@@ -1,3 +1,4 @@
+import kotlinx.html.Entities
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLDivElement
@@ -17,7 +18,7 @@ fun loadData() {
 
         addTr(
             Pair((index+1).toString(),
-                "${date.toUTCString()} ${history.ip} ${history.type} ${history.downlink}Mb/s ${history.rtt}ms"),
+                "$date | ${history.ip} | ${history.type} | ${history.downlink}Mb/s | ${history.rtt}ms"),
             tableNetworkBody
         )
     }
