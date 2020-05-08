@@ -29,10 +29,17 @@ dependencies {
 
 kotlin {
     target {
+
         // You can drop browser or node if you targeting only one
         browser()
 //        nodejs()
     }
+
+
+//    compilations.all {
+//        kotlinOptions.outputFile = "${rootDir}/web/app.js"
+//    }
+
 //    sourceSets["main"].dependencies {
 ////        implementation(npm("is-sorted"))
 ////        implementation(npm("left-pad", "1.3.0"))

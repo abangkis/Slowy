@@ -19,6 +19,7 @@ fun addServiceWorker() {
     })
 }
 
+
 fun workerRegistered() {
     console.log("service worker registered callback!")
 }

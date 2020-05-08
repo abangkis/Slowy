@@ -17,7 +17,7 @@ function count2() {
 
 self.addEventListener('install', e => {
     console.log("sw install")
-    console.log(count2())
+    myModule.workerRegistered()
 });
 
 self.addEventListener('activate', event => {
@@ -27,5 +27,4 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     console.log("fetch event")
-    console.log(count1())
 });
